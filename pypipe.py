@@ -1,139 +1,476 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-
-
 # imports
-from tkinter import *
-import math
+import tkinter as tk
+from tkinter import messagebox
 from datetime import datetime
 
-# validate input keystrokes
-def validate_input(new_value):
-    valid = (new_value .isdigit() and len(new_value) <= 3) or new_value == ''
-    return valid
 
-# conversion function formulas
-def convert():
 
-    Diameter = EntryDiameter.get()
-    Length = EntryLength.get() 
-    Radius = Diameter / 2
-    
-    VolumeResult.set(round(3.14 * pow(Radius, 2) * Length / 1000)) 
-    VolumeResult2.set(round(3.14 * pow(Radius, 2) * Length / 1000 * 2))
-    
-    Area = round(pow(Radius, 2) * 3.14)
-    
-# try and except for dividing by zero
-    try:
-        SoftFlush.set(round(Area / 1000 * 0.5 * 60))
-        SoftFlushTime.set(round(VolumeResult2.get() / SoftFlush.get()))
-        FullFlush.set(round(Area / 1000 * 0.8 * 60))
-        FullFlushTime.set(round(VolumeResult2.get() / FullFlush.get()))
-        
-    except ZeroDivisionError:
-        VolumeResult.set('0') 
-        VolumeResult2.set('0')
-        SoftFlush.set('0')
-        SoftFlushTime.set('0')
-        FullFlush.set('0')
-        FullFlushTime.set('0')
-        Area = '0'
-        Radius = '0'
+# home
+class Win:
+    def __init__(self, root):
+        # home geometry
+        self.root = root
+        self.root.geometry("250x370")
+        self.root.configure(background='gray99')
+        self.root.resizable(0, 0)
+# selection information label
+        self.selectionLabel = tk.Label(
+            self.root, bg='gray99', text='Select the material of the pipe:', padx=10, pady=15).pack()
+# cast iron selection
+        self.materialCastIron = tk.Button(self.root, overrelief="raised", relief="groove", width=22, padx=10, pady=25, text="Cast Iron",
+                                          command=lambda: self.new_window(castIron)).pack(padx=10, pady=10)
+# ductile iron selection
+        self.materialDuctileIron = tk.Button(self.root, overrelief="raised", relief="groove", width=22, padx=10, pady=25, text="Ductile Iron",
+                                             command=lambda: self.new_window(ductileIron)).pack(padx=10, pady=10)
+# HDPPE selection
+        self.materialHdpe = tk.Button(self.root, overrelief="raised", relief="groove", width=22, padx=10, pady=25, text="HDPE",
+                                       command=lambda: self.new_window(Hdpe)).pack(padx=10, pady=10)
 
-# date time
-now = datetime.now()
-date_time = now.strftime("[%d/%m/%Y - %H:%M]")
+        self.infoLabel = tk.Label(self.root, bg='gray99', text="Developed for the use of Thames Water\nInformed by WN37", fg='gray65').pack()
 
-#create & append textfiles - soft flush & full flush
-def writefile_Soft():
-    
-    with open ('FlushingDiary.txt', 'a') as af:
-        af.write(f"{date_time} {VolumeResult2.get()} litres flushed at {SoftFlush.get()} L/PM, for a total of {SoftFlushTime.get()} minutes\n")
-           
-def writefile_Full():
-    
-    with open ('FlushingDiary.txt', 'a') as af:
-            af.write(f"{date_time} {VolumeResult2.get()} litres flushed at {FullFlush.get()} L/PM, for a total of {FullFlushTime.get()} minutes\n")
 
-# tkinter setup
-root = Tk()
-root.geometry("350x280")
-root.configure(background='gray99')
-root.title("PyPipe")
-root.resizable(0, 0)
-validate = root.register(validate_input)
+# validation - only allow one window at a time
+    def new_window(self, _class):
+        try:
+            if self.new.state() == "normal":
+                self.new.focus()
+        except:
+            self.new = tk.Toplevel(self.root)
+            _class(self.new)
 
-# defining variable types and assigning default labels
-VolumeResult = IntVar()
-VolumeResult.set('0')
 
+### class for cast iron ###
+class castIron:
+    def __init__(self, root):
+        # cast iron geometry
+        self.root = root
+        self.root.title("PyPipe - Cast Iron")
+        self.root.geometry("300x570")
+        self.root.configure(background='gray99')
+        self.root.resizable(0, 0)
+# message boxes for formulas
+        def ShowVolume():
+            tk.messagebox.showinfo('Formula', '3.14 * Radius ^ 2 * Length / 1000')
+        def ShowTwiceCapacity():
+            tk.messagebox.showinfo('Formula', 'Volume * 2')
+        def ShowVelocity():
+            tk.messagebox.showinfo('Formula','Area = Radius ^ 2 * 3.14\nFlow Rate = Area / 1000 * Velocity')
+        def ShowTime():
+            tk.messagebox.showinfo('Formula', 'Twice Capacity / Flow Rate')
+# calculation button
+        def convert():
+            Diameter = diameterVariable.get()
+            if Diameter == 3:
+                Diameter = 80
+            if Diameter == 4:
+                Diameter = 106
+            if Diameter == 5:
+                Diameter = 133
+            if Diameter == 6:
+                Diameter = 158
+            if Diameter == 7:
+                Diameter = 185
+            if Diameter == 8:
+                Diameter = 210
+            if Diameter == 9:
+                Diameter = 236
+            if Diameter == 10:
+                Diameter = 262
+            if Diameter == 12:
+                Diameter = 319
+            if Diameter == 14:
+                Diameter = 371
+            if Diameter == 15:
+                Diameter = 397
+            if Diameter == 16:
+                Diameter = 423
+            Radius = Diameter/2
+            Length = lengthVariable.get()
+            Velocity = velocityVariable.get()
+            Velocity = float(Velocity)
+            volumeResult.set(round(3.14 * pow(Radius, 2) * Length/1000))
+            twiceResult.set(round(3.14 * pow(Radius, 2) * Length/1000 * 2))
+            try:
+                Area = round(pow(Radius, 2) * 3.14)
+                velocityResult.set(round(Area / 1000 * Velocity))
+                timeResult.set(round(twiceResult.get() // (velocityResult.get() * 60)))
+            except ZeroDivisionError:
+                volumeResult.set('0')
+                twiceResult.set('0')
+                Area = '0'
+                velocityResult.set('0')
+
+# validation for entry field
+        def validate_input(new_value):
+            valid = (new_value .isdigit() and len(
+                new_value) <= 3) or new_value == ''
+            return valid
+# validate variable to call on in entry field
+        validate = root.register(validate_input)
+
+# write to notepad
+        def writefile():
+            if twiceResult.get() == 0:
+                tk.messagebox.showinfo("Error", "There are no values to be saved.")
+            else:
+                now = datetime.now()
+                date_time = now.strftime("[%d/%m/%Y - %H:%M]")
+                with open ('FlushingDiary.txt', 'a') as af:
+                    af.write(f"{date_time} {twiceResult.get()} litres flushed at {velocityResult.get()} L/S, for a total of {timeResult.get()} minutes\n")
+
+# cast iron variables
+# diameter
+        diameterVariable = tk.IntVar(root)
+        diameterVariable.set("0")
+        diameterLabel = tk.Label(root, pady=15,
+                                 text="Set the diameter (INCH)", bg='gray99')
+        diameterDropdown = tk.OptionMenu(root, diameterVariable,
+                                         3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16)
+        diameterLabel.pack()
+        diameterDropdown.pack()
+# length
+        lengthVariable = tk.IntVar(root)
+        lengthLabel = tk.Label(root, pady=15,
+                               text="Set the length of the isolated section (METRE):", bg='gray99')
+        lengthEntry = tk.Entry(root, textvariable=lengthVariable,
+                               validate='key', validatecommand=(validate, '%P'), width=6, relief="groove")
+        lengthLabel.pack()
+        lengthEntry.pack()
+# velocity entry
+        velocityVariable = tk.StringVar(root)
+        velocityVariable.set("0")
+        velocityLabel = tk.Label(root, pady=10,
+                                 text="Set the velocity (METRES/SECOND)", bg='gray99')
+        velocityDropdown = tk.OptionMenu(root, velocityVariable,
+                                         0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3)
+        spacer1 = tk.Label(root, pady=2, bg='gray99')
+        velocityLabel.pack()
+        velocityDropdown.pack()
+        spacer1.pack()
+# convert button
+        button = tk.Button(root, command=convert, text='Calculate', pady=5, width=15, overrelief="raised", relief="groove")
+        spacer2 = tk.Label(root, pady=5, bg='gray99')
+        button.pack()
+        spacer2.pack()
+# volume
+        volumeInfo = tk.Button(root, relief='flat', command=ShowVolume, text="Volume of section (LITRE):", bg='gray99', pady=5)
+        volumeResult = tk.IntVar(root)
+        volumeResult.set('0')
+        volumeLabel = tk.Label(root, textvariable=volumeResult, bg='gray99', fg='darkred')
+        volumeInfo.pack()
+        volumeLabel.pack()
 # twice capacity
-VolumeResult2 = IntVar()
-VolumeResult2.set('0')
+        twiceInfo = tk.Button(root, relief='flat', command=ShowTwiceCapacity, text="Twice capacity of section (LITRE):", bg='gray99')
+        twiceResult = tk.IntVar(root)
+        twiceResult.set('0')
+        twiceLabel = tk.Label(root, textvariable=twiceResult, bg='gray99', fg='darkred')
+        twiceInfo.pack()
+        twiceLabel.pack()
+# velocity
+        velocityInfo = tk.Button(root, relief='flat', command=ShowVelocity, text="Flow (LITRES/SECONDS)", bg='gray99')
+        velocityResult = tk.IntVar(root)
+        velocityResult.set('0')
+        velocityResultlabel = tk.Label(root, textvariable=velocityResult, bg='gray99', fg='darkred')
+        velocityInfo.pack()
+        velocityResultlabel.pack()
+# time
+        timeInfo = tk.Button(root, relief='flat', command=ShowTime, text="Time to flush (MINUTES)", bg='gray99')
+        timeResult = tk.IntVar(root)
+        timeResult.set('0')
+        timeResultlabel = tk.Label(root, textvariable=timeResult, bg='gray99', fg='darkred')
+        spacer3 = tk.Label(root, pady=5, bg='gray99')
+        timeInfo.pack()
+        timeResultlabel.pack()
+        spacer3.pack()
+# save
+        saveButton = tk.Button(root, text='Save Results', command=writefile, width=15, overrelief="raised", relief="groove")
+        saveButton.pack()
+### class for ductile iron ###
+class ductileIron:
+    def __init__(self, root):
+        # ductile iron geometry
+        self.root = root
+        self.root.title("PyPipe - Ductile Iron")
+        self.root.geometry("300x570")
+        self.root.configure(background='gray99')
+        self.root.resizable(0, 0)
+        self.root.option_add("*font", "calibri 10")
+# message boxes for formulas
+        def ShowVolume():
+            tk.messagebox.showinfo('Formula', '3.14 * Radius ^ 2 * Length / 1000')
+        def ShowTwiceCapacity():
+            tk.messagebox.showinfo('Formula', 'Volume * 2')
+        def ShowVelocity():
+            tk.messagebox.showinfo('Formula','Area = Radius ^ 2 * 3.14\nFlow Rate = Area / 1000 * Velocity')
+        def ShowTime():
+            tk.messagebox.showinfo('Formula', 'Twice Capacity / Flow Rate')
+# calculation button
+        def convert():
+            Diameter = diameterVariable.get()
+            if Diameter == 80:
+                Diameter = 86
+            if Diameter == 100:
+                Diameter = 96
+            if Diameter == 150:
+                Diameter = 147
+            if Diameter == 200:
+                Diameter = 199
+            if Diameter == 250:
+                Diameter = 250
+            if Diameter == 300:
+                Diameter = 302
+            if Diameter == 350:
+                Diameter = 350
+            if Diameter == 400:
+                Diameter = 403
+            if Diameter == 450:
+                Diameter = 453
 
-# 0.5m/s flush
-SoftFlush = IntVar()
-SoftFlush.set('0')
+            Radius = Diameter/2
+            Length = lengthVariable.get()
+            Velocity = velocityVariable.get()
+            Velocity = float(Velocity)
+            volumeResult.set(round(3.14 * pow(Radius, 2) * Length/1000))
+            twiceResult.set(round(3.14 * pow(Radius, 2) * Length/1000 * 2))
+            try:
+                Area = round(pow(Radius, 2) * 3.14)
+                velocityResult.set(round(Area / 1000 * Velocity))
+                timeResult.set(round(twiceResult.get() // (velocityResult.get() * 60)))
 
-# time to flush at 0.5m/s
-SoftFlushTime = IntVar()
-SoftFlushTime.set('0')
+            except ZeroDivisionError:
+                volumeResult.set('0')
+                twiceResult.set('0')
+                Area = '0'
+                velocityResult.set('0')
+# validation for entry field
+        def validate_input(new_value):
+            valid = (new_value .isdigit() and len(
+                new_value) <= 3) or new_value == ''
+            return valid
+# validate variable to call on in entry field
+        validate = root.register(validate_input)
 
-# 0.8m/s flush
-FullFlush = IntVar()
-FullFlush.set('0')
+# write to notepad
+        def writefile():
+            if twiceResult.get() == 0:
+                tk.messagebox.showinfo("Error", "There are no values to be saved.")
+            else:
+                now = datetime.now()
+                date_time = now.strftime("[%d/%m/%Y - %H:%M]")
+                with open ('FlushingDiary.txt', 'a') as af:
+                    af.write(f"{date_time} {twiceResult.get()} litres flushed at {velocityResult.get()} L/S, for a total of {timeResult.get()} minutes\n")
 
-# time to flush at 0.8m/s
-FullFlushTime = IntVar()
-FullFlushTime.set('0')
+# ductile iron variables
+# diameter
+        diameterVariable = tk.IntVar(root)
+        diameterVariable.set("0")
+        diameterLabel = tk.Label(root, pady=15,
+                                 text="Set the diameter (MM)", bg='gray99')
+        diameterDropdown = tk.OptionMenu(root, diameterVariable,
+                                         80, 100, 150, 200, 250, 300, 350, 400, 450)
+        diameterLabel.pack()
+        diameterDropdown.pack()
+# length
+        lengthVariable = tk.IntVar(root)
+        lengthLabel = tk.Label(root, pady=15,
+                               text="Set the length of the isolated section (METRE):", bg='gray99')
+        lengthEntry = tk.Entry(root, textvariable=lengthVariable,
+                               validate='key', validatecommand=(validate, '%P'), width=6, relief="groove")
+        lengthLabel.pack()
+        lengthEntry.pack()
+# velocity entry
+        velocityVariable = tk.StringVar(root)
+        velocityVariable.set("0")
+        velocityLabel = tk.Label(root, pady=10,
+                                 text="Set the velocity required (METRES/SECOND)", bg='gray99')
+        velocityDropdown = tk.OptionMenu(root, velocityVariable,
+                                         0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3)
+        spacer1 = tk.Label(root, pady=2, bg='gray99')
+        velocityLabel.pack()
+        velocityDropdown.pack()
+        spacer1.pack()
+# convert button
+        button = tk.Button(root, command=convert, text='Calculate', pady=5, width=15, overrelief="raised", relief="groove")
+        spacer2 = tk.Label(root, pady=5, bg='gray99')
+        button.pack()
+        spacer2.pack()
+# volume
+        volumeInfo = tk.Button(root, relief='flat', command=ShowVolume, text="Volume of section (LITRE):", bg='gray99', pady=5)
+        volumeResult = tk.IntVar(root)
+        volumeResult.set('0')
+        volumeLabel = tk.Label(root, textvariable=volumeResult, bg='gray99', fg='darkred')
+        volumeInfo.pack()
+        volumeLabel.pack()
+# twice capacity
+        twiceInfo = tk.Button(root, relief='flat', command=ShowTwiceCapacity, text="Twice capacity of section (LITRE):", bg='gray99')
+        twiceResult = tk.IntVar(root)
+        twiceResult.set('0')
+        twiceLabel = tk.Label(root, textvariable=twiceResult, bg='gray99', fg='darkred')
+        twiceInfo.pack()
+        twiceLabel.pack()
+# velocity
+        velocityInfo = tk.Button(root, relief='flat', command=ShowVelocity, text="Flow (LITRES/SECONDS)", bg='gray99')
+        velocityResult = tk.IntVar(root)
+        velocityResult.set('0')
+        velocityResultlabel = tk.Label(root, textvariable=velocityResult, bg='gray99', fg='darkred')
+        velocityInfo.pack()
+        velocityResultlabel.pack()
+# time
+        timeInfo = tk.Button(root, relief='flat', command=ShowTime, text="Time to flush (MINUTES)", bg='gray99')
+        timeResult = tk.IntVar(root)
+        timeResult.set('0')
+        timeResultlabel = tk.Label(root, textvariable=timeResult, bg='gray99', fg='darkred')
+        spacer3 = tk.Label(root, pady=5, bg='gray99')
+        timeInfo.pack()
+        timeResultlabel.pack()
+        spacer3.pack()
+# save
+        saveButton = tk.Button(root, text='Save Results', command=writefile, width=15, overrelief="raised", relief="groove")
+        saveButton.pack()
+### class for hdpe ##
+class Hdpe:
+    def __init__(self, root):
+        # hdpe geometry
+        self.root = root
+        self.root.title("PyPipe - HDPE")
+        self.root.geometry("300x570")
+        self.root.configure(background='gray99')
+        self.root.resizable(0, 0)
+        self.root.option_add("*font", "calibri 10")
+# message boxes for formulas
+        def ShowVolume():
+            tk.messagebox.showinfo('Formula', '3.14 * Radius ^ 2 * Length / 1000')
+        def ShowTwiceCapacity():
+            tk.messagebox.showinfo('Formula', 'Volume * 2')
+        def ShowVelocity():
+            tk.messagebox.showinfo('Formula','Area = Radius ^ 2 * 3.14\nFlow Rate = Area / 1000 * Velocity')
+        def ShowTime():
+            tk.messagebox.showinfo('Formula', 'Twice Capacity / Flow Rate')
+# calculation button
+        def convert():
+            Diameter = diameterVariable.get()
+            if Diameter == 90:
+                Diameter = 73.6
+            if Diameter == 125:
+                Diameter = 102.2
+            if Diameter == 180:
+                Diameter = 147.2
+            if Diameter == 250:
+                Diameter = 204.4
+            if Diameter == 315:
+                Diameter = 257.8
+            if Diameter == 355:
+                Diameter = 290.4
+            if Diameter == 400:
+                Diameter = 327.2
+            if Diameter == 450:
+                Diameter = 368.2
+            if Diameter == 500:
+                Diameter = 409
+            Radius = Diameter/2
+            Length = lengthVariable.get()
+            Velocity = velocityVariable.get()
+            Velocity = float(Velocity)
+            volumeResult.set(round(3.14 * pow(Radius, 2) * Length/1000))
+            twiceResult.set(round(3.14 * pow(Radius, 2) * Length/1000 * 2))
+            try:
+                Area = round(pow(Radius, 2) * 3.14)
+                velocityResult.set(round(Area / 1000 * Velocity))
+                timeResult.set(round(twiceResult.get() // (velocityResult.get() * 60)))
+            except ZeroDivisionError:
+                volumeResult.set('0')
+                twiceResult.set('0')
+                Area = '0'
+                velocityResult.set('0')
+            #volumeResult =
+# validation for entry field
+        def validate_input(new_value):
+            valid = (new_value .isdigit() and len(
+                new_value) <= 3) or new_value == ''
+            return valid
+# validate variable to call on in entry field
+        validate = root.register(validate_input)
 
-# inputs fields
-EntryLength = IntVar()
-EntryDiameter = IntVar()
+# write to notepad
+        def writefile():
+            if twiceResult.get() == 0:
+                tk.messagebox.showinfo("Error", "There are no values to be saved.")
+            else:
+                now = datetime.now()
+                date_time = now.strftime("[%d/%m/%Y - %H:%M]")
+                with open ('FlushingDiary.txt', 'a') as af:
+                    af.write(f"{date_time} {twiceResult.get()} litres flushed at {velocityResult.get()} L/S, for a total of {timeResult.get()} minutes\n")
+# hdpe variables
+# diameter
+        diameterVariable = tk.IntVar(root)
+        diameterVariable.set("0")
+        diameterLabel = tk.Label(root, pady=15,
+                                 text="Set the diameter (MM)", bg='gray99')
+        diameterDropdown = tk.OptionMenu(root, diameterVariable,
+                                         90, 125, 180, 250, 315, 355, 400, 450, 500)
+        diameterLabel.pack()
+        diameterDropdown.pack()
+# length
+        lengthVariable = tk.IntVar(root)
+        lengthLabel = tk.Label(root, pady=15,
+                               text="Set the length (METRE):", bg='gray99')
+        lengthEntry = tk.Entry(root, textvariable=lengthVariable,
+                               validate='key', validatecommand=(validate, '%P'), width=6, relief="groove")
+        lengthLabel.pack()
+        lengthEntry.pack()
+# velocity entry
+        velocityVariable = tk.StringVar(root)
+        velocityVariable.set("0")
+        velocityLabel = tk.Label(root, pady=10,
+                                 text="Set the velocity (METRE/SEC)", bg='gray99')
+        velocityDropdown = tk.OptionMenu(root, velocityVariable,
+                                         0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3)
+        spacer1 = tk.Label(root, pady=2, bg='gray99')
+        velocityLabel.pack()
+        velocityDropdown.pack()
+        spacer1.pack()
+# convert button
+        button = tk.Button(root, command=convert, text='Calculate', pady=5, width=15, overrelief="raised", relief="groove")
+        spacer2 = tk.Label(root, pady=5, bg='gray99')
+        button.pack()
+        spacer2.pack()
+# volume
+        volumeInfo = tk.Button(root, relief='flat', command=ShowVolume, text="Volume of section (LITRE):", bg='gray99', pady=5)
+        volumeResult = tk.IntVar(root)
+        volumeResult.set('0')
+        volumeLabel = tk.Label(root, textvariable=volumeResult, bg='gray99', fg='darkred')
+        volumeInfo.pack()
+        volumeLabel.pack()
+# twice capacity
+        twiceInfo = tk.Button(root, relief='flat', command=ShowTwiceCapacity, text="Twice capacity of section (LITRE):", bg='gray99')
+        twiceResult = tk.IntVar(root)
+        twiceResult.set('0')
+        twiceLabel = tk.Label(root, textvariable=twiceResult, bg='gray99', fg='darkred')
+        twiceInfo.pack()
+        twiceLabel.pack()
+# velocity
+        velocityInfo = tk.Button(root, relief='flat', command=ShowVelocity, text="Flow (LITRES/SECONDS)", bg='gray99')
+        velocityResult = tk.IntVar(root)
+        velocityResult.set('0')
+        velocityResultlabel = tk.Label(root, textvariable=velocityResult, bg='gray99', fg='darkred')
+        velocityInfo.pack()
+        velocityResultlabel.pack()
+# time
+        timeInfo = tk.Button(root, relief='flat', command=ShowTime, text="Time to flush (MINUTES)", bg='gray99')
+        timeResult = tk.IntVar(root)
+        timeResult.set('0')
+        timeResultlabel = tk.Label(root, textvariable=timeResult, bg='gray99', fg='darkred')
+        spacer3 = tk.Label(root, pady=5, bg='gray99')
+        timeInfo.pack()
+        timeResultlabel.pack()
+        spacer3.pack()
+# save
+        saveButton = tk.Button(root, text='Save Results', command=writefile, width=15, overrelief="raised", relief="groove")
+        saveButton.pack()
 
-# entry boxes
-EnterDiameter = Entry(root, relief='sunken', validate="key", validatecommand=(validate, "%P"), width=4, borderwidth=1, textvariable = EntryDiameter, font=('lucida 9 bold'), bg='grey95', fg="firebrick3").place(x=160, y=10)
-EnterLength = Entry(root, relief='sunken', validate="key", validatecommand=(validate, "%P"), width=4, borderwidth=1, textvariable = EntryLength, font=('lucida 9 bold'), bg='grey95', fg="firebrick3").place(x=160, y=35)
-
-# buttons, conversion and saves
-Button1 = Button(root, relief='groove', width=22, text = "Convert", bg="deepskyblue", font=('lucida 9 bold'), fg="black", command=convert).place(x=95, y=70)
-Button2 = Button(root, relief='groove', width=22, text = "Save Soft Flush", bg="deepskyblue", font=('lucida 9 bold'), fg="black", command=writefile_Soft).place(x=10, y=210)
-Button3 = Button(root, relief='groove', width=22, text = "Save Full Flush", bg="deepskyblue", font=('lucida 9 bold'), fg="black", command=writefile_Full).place(x=180, y=210)
-
-# labels for results
-ResultVolume = Label(root, textvariable=VolumeResult, font=('lucida 9 bold'), bg='gray99', fg="firebrick3").place(x=105, y=110)
-ResultVolume2 = Label(root, textvariable=VolumeResult2, font=('lucida 9 bold'), bg='gray99', fg="firebrick3").place(x=105, y=130)
-ResultSoftFlush = Label(root, textvariable=SoftFlush, font=('lucida 9 bold'), bg='gray99', fg="firebrick3").place(x=105, y=150)
-ResultSoftFlushTime = Label(root,  textvariable=SoftFlushTime, font=('lucida 9 bold'), bg='gray99', fg="firebrick3").place(x=265, y=150)
-ResultFullFlush = Label(root, textvariable = FullFlush, font=('lucida 9 bold'), bg='gray99', fg="firebrick3").place(x=105, y=170)
-ResultFullFlushTime = Label(root, textvariable = FullFlushTime, font=('lucida 9 bold'), bg='gray99', fg="firebrick3").place(x=265, y=170)
-
-# labels for inputs
-DiameterLabel =  Label(root, text="Outer Diameter:", font=('lucida 9 bold'), bg='gray99', fg="black").place(x=60, y=10)
-MillimetersLabel = Label(root, text="mm", font=('lucida 9 bold'), bg='gray99', fg="black").place(x=198, y=10)
-LengthLabel= Label(root, text="Length:", font=('lucida 9 bold'), bg='gray99', fg="black").place(x=105, y=35)
-MetersLabel = Label(root, text="meters", font=('lucida 9 bold'), bg='gray99', fg="black").place(x=198, y=35)
-
-# labels for outputs
-VolumeLabel = Label(root, text="Volume:", font=('lucida 9 bold'), bg='gray99', fg="black").place(x=48, y=110)
-VolumeLitres = Label(root, text="litres", font=('lucida 9 bold'), bg='gray99', fg="black").place(x=150,y=110)
-TwiceCapacity = Label(root, text="Twice Capacity:", font=('lucida 9 bold'), bg='gray99', fg="black").place(x=10, y=130)
-TwiceCapacityLitres = Label(root, text="litres", font=('lucida 9 bold'), bg='gray99', fg="black").place(x=150,y=130)
-SoftFlushLabel = Label(root, text="Soft Flush:", font=('lucida 9 bold'), bg='gray99', fg="black").place(x=38, y=150)
-SoftFlushLPM = Label(root, text="litres per minute, for", font=('lucida 9 bold'), bg='gray99', fg="black").place(x=145, y=150)
-SoftFlushMinutes = Label(root, text="minutes", font=('lucida 9 bold'), bg='gray99', fg="black").place(x=282,y=150)
-FullFlushLabel = Label(root, text="Full Flush:", font=('lucida 9 bold'), bg='gray99', fg="black").place(x=38, y=170)
-FullFlushLPM = Label(root, text="litres per minute, for", font=('lucida 9 bold'), bg='gray99', fg="black").place(x=145, y=170)
-FullFlushMinutes = Label(root, text="minutes", font=('lucida 9 bold'), bg='gray99', fg="black").place(x=282, y=170)
-
-# footer
-myLabel = Label(root, text="Developed for the use of Network Service Technicians at Thames Water Utilities", font=('lucida 9 bold', 7), bg='gray99', fg="gray60").place(x=1, y=260)
-
-# eof
-root.mainloop()
-
-
-
-
+# close loop and execute from __main__
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = Win(root)
+    app.root.title("PyPipe v1.3")
+    root.mainloop()
